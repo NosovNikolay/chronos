@@ -1,5 +1,5 @@
-import {AuthService} from '@modules/auth/auth.service';
-import {Controller, Post} from '@nestjs/common';
+import { AuthService } from '@modules/auth/auth.service';
+import { Controller, Post } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -7,6 +7,6 @@ export class AuthController {
 
   @Post('registration')
   async register(): Promise<any> {
-    return this.authService.registration()
+    return this.authService.registration();
   }
 }
