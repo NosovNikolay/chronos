@@ -1,11 +1,11 @@
-import {Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { UserRepository } from '@shared/repositories/user.repository';
 
 @Injectable()
 export class AuthService {
-  constructor() {
-  }
+  constructor(private readonly userRepository: UserRepository) {}
 
-  async registration(): Promise<string> {
-    return 'registration'
+  async registration(): Promise<any> {
+    return this.userRepository.create({ login: 'as' });
   }
 }
