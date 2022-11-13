@@ -1,1 +1,1 @@
-export * from './magic-numbers'
+export * from './magic-numbers';

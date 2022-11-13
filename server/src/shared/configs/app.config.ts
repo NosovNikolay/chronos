@@ -13,28 +13,32 @@ class AppConfig {
     return value;
   }
 
-  public ensureValues(keys: string[]): AppConfig {
+  ensureValues(keys: string[]): AppConfig {
     for (const k of keys) this.getValue(k, true);
     return this;
   }
 
-  public getHost(): string {
+  getPepper(): string {
+    return this.getValue('PEPPER', true);
+  }
+
+  getHost(): string {
     return this.getValue('HOST') || '0.0.0.0';
   }
 
-  public getPort(): string | number {
+  getPort(): string | number {
     return this.getValue('PORT') || defaultPort;
   }
 
-  public getAppSecret(): string | undefined {
+  getAppSecret(): string | undefined {
     return this.getValue('APP_SECRET', true);
   }
 
-  public getJwtExpired(): string | undefined {
+  getJwtExpired(): string | undefined {
     return this.getValue('JWT_EXPIRED', true);
   }
 }
 
-const appConfig = new AppConfig(process.env).ensureValues(['PORT', 'HOST']);
+const appConfig = new AppConfig(process.env).ensureValues(['PORT', 'HOST', 'APP_SECRET', 'JWT_EXPIRED']);
 
 export { appConfig };
