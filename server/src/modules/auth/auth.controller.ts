@@ -1,5 +1,5 @@
 import { AuthService } from '@modules/auth/auth.service';
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import { SignUpRequestDto, SignInRequestDto } from '@modules/auth/dto/request';
 import { UserResponseDto } from '@modules/user/dto/response/user.response.dto';
 import { JwtAuthGuard } from '@shared/guards';
@@ -11,8 +11,12 @@ export class AuthController {
 
   @Post('sign-up')
   async register(@Body() singUpDto: SignUpRequestDto): Promise<UserResponseDto> {
-    const user = await this.authService.registration(singUpDto);
-    return UserResponseDto.mapFrom(user);
+    try {
+      const user = await this.authService.registration(singUpDto);
+      return UserResponseDto.mapFrom(user);
+    } catch {
+      throw new HttpException('User already exists', HttpStatus.FORBIDDEN);
+    }
   }
 
   @Post('sign-in')
