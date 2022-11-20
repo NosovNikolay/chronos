@@ -34,11 +34,10 @@ export default function Login() {
     },
     validationSchema: loginSchema,
     onSubmit: async (data) => {
+      // types errors
       const result = await login(data.email, data.password);
       // bad types + bad condition
-      console.log(result);
       if (result.status === 201) {
-        console.log(result);
         // mock token for now, then will receive it from api
         localStorage.setItem('auth', '123');
         navigate('/dashboard');
