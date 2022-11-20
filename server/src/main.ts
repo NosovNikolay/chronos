@@ -3,6 +3,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import fastifyCookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import { contentParser } from 'fastify-multer';
+
 import { AppModule } from './app.module';
 
 import { appConfig, cookieConfig } from '@shared/configs';
@@ -11,9 +12,16 @@ import { ValidationPipe } from '@shared/pipes';
 
 const port = appConfig.getPort();
 const host = appConfig.getHost();
+const frontApi = appConfig.getFrontApiLink();
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+
+  app.enableCors({
+    origin: frontApi,
+    credentials: true,
+  });
+
   await app.register(fastifyCookie, cookieConfig);
 
   await app.register(contentParser);
