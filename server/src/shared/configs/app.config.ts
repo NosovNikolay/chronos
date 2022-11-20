@@ -30,6 +30,10 @@ class AppConfig {
     return this.getValue('PORT') || defaultPort;
   }
 
+  getFrontApiLink(): string {
+    return this.getValue('FRONT_API_LINK');
+  }
+
   getAppSecret(): string | undefined {
     return this.getValue('APP_SECRET', true);
   }
