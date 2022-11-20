@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import * as React from 'react';
-import {env} from '../config/env';
+import { env } from '../config/env';
 
 export interface LoginData {
   email: string;
@@ -55,7 +55,8 @@ function useAuth() {
         setAuthed(true);
         return responce;
       } catch (err) {
-        if (err instanceof AxiosError) return err.toJSON();
+        console.log(err);
+        if (err instanceof AxiosError) return err.response?.data;
       }
     },
     logout() {
@@ -66,7 +67,7 @@ function useAuth() {
   };
 }
 
-export function AuthProvider({ children }: ProviderProps): React.ReactNode {
+export function AuthProvider({ children }: ProviderProps) {
   const auth = useAuth();
   return <authContext.Provider value={auth}>{children}</authContext.Provider>;
 }
