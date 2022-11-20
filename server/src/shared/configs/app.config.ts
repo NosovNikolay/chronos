@@ -43,6 +43,12 @@ class AppConfig {
   }
 }
 
-const appConfig = new AppConfig(process.env).ensureValues(['PORT', 'HOST', 'APP_SECRET', 'JWT_EXPIRED']);
+const appConfig = new AppConfig(process.env).ensureValues([
+  'PORT',
+  'HOST',
+  'APP_SECRET',
+  'JWT_EXPIRED',
+  'FRONT_API_LINK',
+]);
 
 export { appConfig };
