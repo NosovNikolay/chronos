@@ -1,3 +1,4 @@
+import '../../styles/flatly/theme/bootstrap.css';
 import '@fullcalendar/react/dist/vdom';
 import React, { useState } from 'react';
 import FullCalendar, {
@@ -7,10 +8,12 @@ import FullCalendar, {
   EventDropArg,
   EventContentArg,
   formatDate,
+  EventChangeArg,
 } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { INITIAL_EVENTS, createEventId } from '../../utils/event-utils';
 interface DemoAppState {
   weekendsVisible: boolean;
@@ -31,10 +34,13 @@ const Calendar = () => {
   };
 
   const handleChange = (info: EventDropArg) => {
+    console.log('change hanlde');
     console.log(info);
   };
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
+    console.log('delete handle');
+    console.log(selectInfo);
     const title = prompt('Please enter a new title for your event');
     const calendarApi = selectInfo.view.calendar;
 
@@ -53,13 +59,21 @@ const Calendar = () => {
     }
   };
 
+  const handleDrop = (dropInfo :EventChangeArg) => {
+    console.log(dropInfo);
+    console.log('drop handle');
+  }
+
   const handleEventClick = (clickInfo: EventClickArg) => {
+    console.log('delete handle');
+    console.log(clickInfo);
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
       clickInfo.event.remove();
     }
   };
 
   const handleEvents = (events: EventApi[]) => {
+    console.log( events );
     setState({
       currentEvents: events,
       weekendsVisible: state.weekendsVisible,
@@ -70,12 +84,15 @@ const Calendar = () => {
     <div className='demo-app'>
       <div className='demo-app-main'>
         <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
+          height={600}
+          themeSystem={'standard'}
+          fixedWeekCount={false}
           initialView='dayGridMonth'
           editable={true}
           selectable={true}
@@ -87,6 +104,7 @@ const Calendar = () => {
           eventContent={renderEventContent} // custom render function
           eventClick={handleEventClick}
           eventDrop={handleChange}
+          eventChange={handleDrop}
           eventsSet={handleEvents} // called after events are initialized/added/changed/removed
           /* you can update a remote database when these fire:
           eventAdd={function(){}}

@@ -16,14 +16,39 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const [responseError, setResponceError] = useState('');
+  const loginSchema = Yup.object({
+    email: Yup.string().email().required('Required'),
+    password: Yup.string().required('Required').min(8),
+  });
+
+  const { handleSubmit, handleChange, handleBlur, touched, errors } = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: loginSchema,
+    onSubmit: async (data) => {
+      // types errors
+      const result = await login(data.email, data.password);
+      // bad types + bad condition
+      if (result.status === 201) {
+        // mock token for now, then will receive it from api
+        localStorage.setItem('auth', '123');
+        navigate('/login');
+      } else {
+        setResponceError(result.message);
+      }
+    },
+  });
+  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
+  //   console.log({
+  //     email: data.get('email'),
+  //     password: data.get('password'),
+  //   });
+  // };
 
   return (
     <ThemeProvider theme={theme}>

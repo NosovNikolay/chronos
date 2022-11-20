@@ -5,7 +5,7 @@ import SignUp from './components/auth/SignUp';
 import Calendar from './components/calendar/Calendar';
 import ResponsiveAppBar from './components/navbar/Navbar';
 import useAuth from './hooks/useAuth';
-
+import {RemoveScroll} from 'react-remove-scroll';
 // Description for unauth user
 const Home = () => <h1>About page</h1>;
 // Dashboard with calendars
@@ -28,30 +28,33 @@ function RequireAuth({ children }: ProviderProps) {
 export default function App() {
   const { authed } = useAuth();
   return (
-    <div>
-      <ResponsiveAppBar />
+    <RemoveScroll>
+      <div>
+        <ResponsiveAppBar />
 
-      <Routes>
-        <Route path='/' element={authed ? <HomeAuth /> : <Home />} />
-        <Route
-          path='/calendar/:id'
-          element={
-            <RequireAuth>
-              <Calendar />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path='/dashboard'
-          element={
-            <RequireAuth>
-              <Calendar />
-            </RequireAuth>
-          }
-        />
-        <Route path='/login' element={<Login />} />
-        <Route path='/sign-up' element={<SignUp />} />
-      </Routes>
-    </div>
+        <Routes>
+          <Route path='/' element={authed ? <HomeAuth /> : <Home />} />
+          <Route
+            path='/calendar/:id'
+            element={
+              <RequireAuth>
+                <Calendar />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/dashboard'
+            element={
+              <RequireAuth>
+                <Calendar />
+              </RequireAuth>
+            }
+          />
+          <Route path='/login' element={<Login />} />
+          <Route path='/sign-up' element={<SignUp />} />
+        </Routes>
+      <div>modal</div>
+      </div>
+    </RemoveScroll>
   );
 }
