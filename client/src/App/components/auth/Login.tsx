@@ -1,10 +1,7 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -13,34 +10,47 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useAuth from '../../hooks/useAuth';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import '../../styles/auth.scss';
+import { useState } from 'react';
 
 const theme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { state } = useLocation();
+  const [responseError, setResponceError] = useState('');
+  const loginSchema = Yup.object({
+    email: Yup.string().email().required('Required'),
+    password: Yup.string().required('Required').min(8),
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email')?.toString();
-    const password = data.get('password')?.toString();
-    console.log({
-      email: data.get('email')?.toString(),
-      password: data.get('password'),
-    });
-    login(email, password).then(() => {
-      navigate(state?.path || "/dashboard");
-    }).catch(() => {
-      console.log('Bad credentials');
-    })
-  };
+  const { handleSubmit, handleChange, handleBlur, touched, errors } = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: loginSchema,
+    onSubmit: async (data) => {
+      const result = await login(data.email, data.password);
+      // bad types + bad condition
+      console.log(result);
+      if (result.status === 201) {
+        console.log(result);
+        // mock token for now, then will receive it from api
+        localStorage.setItem('auth', '123');
+        navigate('/dashboard');
+      } else {
+        setResponceError(result.message);
+      }
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
           sx={{
@@ -53,44 +63,46 @@ export default function Login() {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component='h1' variant='h5'>
             Log In
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id='email'
+                  label='Email Address'
+                  name='email'
+                  autoComplete='email'
                 />
+                {touched.email ? <div className='errorInputLog'>{errors.email}</div> : null}
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
+                  name='password'
+                  label='Password'
+                  type='password'
+                  id='password'
+                  autoComplete='new-password'
                 />
+                {touched.password ? <div className='errorInputLog'>{errors.password}</div> : null}
               </Grid>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
               Log In
             </Button>
-            <Grid container justifyContent="flex-end">
+            {responseError ? <div className='errorInputLog'>{responseError}</div> : null}
+            <Grid container justifyContent='flex-end'>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href='#' variant='body2'>
                   Forgot the password?
                 </Link>
               </Grid>

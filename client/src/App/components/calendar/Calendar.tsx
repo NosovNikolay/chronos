@@ -1,38 +1,45 @@
 import '@fullcalendar/react/dist/vdom';
-import React, { useState } from 'react'
-import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventDropArg, EventContentArg, formatDate } from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from '../../utils/event-utils'
+import React, { useState } from 'react';
+import FullCalendar, {
+  EventApi,
+  DateSelectArg,
+  EventClickArg,
+  EventDropArg,
+  EventContentArg,
+  formatDate,
+} from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { INITIAL_EVENTS, createEventId } from '../../utils/event-utils';
 interface DemoAppState {
-  weekendsVisible: boolean
-  currentEvents: EventApi[]
+  weekendsVisible: boolean;
+  currentEvents: EventApi[];
 }
 
 const Calendar = () => {
-  const [ state, setState ] = useState<DemoAppState>( {
+  const [state, setState] = useState<DemoAppState>({
     weekendsVisible: true,
-    currentEvents: []
-  })
+    currentEvents: [],
+  });
 
   const handleWeekendsToggle = () => {
     setState({
       weekendsVisible: state.weekendsVisible,
-      currentEvents: []
+      currentEvents: [],
     });
-  }
+  };
 
   const handleChange = (info: EventDropArg) => {
     console.log(info);
-  }
+  };
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
-    let title = prompt('Please enter a new title for your event')
-    let calendarApi = selectInfo.view.calendar
+    const title = prompt('Please enter a new title for your event');
+    const calendarApi = selectInfo.view.calendar;
 
-    calendarApi.unselect() // clear date selection
-    console.log( createEventId() );
+    calendarApi.unselect(); // clear date selection
+    console.log(createEventId());
     if (title) {
       calendarApi.addEvent({
         id: createEventId(),
@@ -41,23 +48,23 @@ const Calendar = () => {
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
         color: 'yellow',
-        textColor: 'black'
-      })
+        textColor: 'black',
+      });
     }
-  }
+  };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove()
+      clickInfo.event.remove();
     }
-  }
+  };
 
   const handleEvents = (events: EventApi[]) => {
     setState({
       currentEvents: events,
-      weekendsVisible: state.weekendsVisible
-    })
-  }
+      weekendsVisible: state.weekendsVisible,
+    });
+  };
 
   return (
     <div className='demo-app'>
@@ -67,7 +74,7 @@ const Calendar = () => {
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
           initialView='dayGridMonth'
           editable={true}
@@ -89,8 +96,8 @@ const Calendar = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
 function renderEventContent(eventContent: EventContentArg) {
   return (
@@ -98,7 +105,7 @@ function renderEventContent(eventContent: EventContentArg) {
       <b>{eventContent.timeText}</b>
       <i>{eventContent.event.title}</i>
     </>
-  )
+  );
 }
 
 export default Calendar;

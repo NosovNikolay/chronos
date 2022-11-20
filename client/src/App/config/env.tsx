@@ -1,6 +1,5 @@
-import { cleanEnv, str, num, email, url } from 'envalid';
-import 'dotenv/config';
+import { cleanEnv, url } from 'envalid';
 
-export const env = cleanEnv(process.env, {
-  REACT_APP_API: url(),
+export const env = cleanEnv(import.meta.env, {
+  VITE_APP_API: url(),
 })

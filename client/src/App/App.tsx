@@ -1,71 +1,56 @@
-import {
-  Link,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-  useLocation
-} from "react-router-dom";
-import Login from "./components/auth/Login";
-import SignUp from "./components/auth/SignUp";
-import Calendar from "./components/calendar/Calendar";
-import ResponsiveAppBar from "./components/navbar/Navbar";
-import useAuth from "./hooks/useAuth";
+import { ReactElement } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Login from './components/auth/Login';
+import SignUp from './components/auth/SignUp';
+import Calendar from './components/calendar/Calendar';
+import ResponsiveAppBar from './components/navbar/Navbar';
+import useAuth from './hooks/useAuth';
 
+// Description for unauth user
 const Home = () => <h1>About page</h1>;
+// Dashboard with calendars
+const HomeAuth = () => <h1>About page auth</h1>;
 
-function Nav() {
-  const { authed, logout } = useAuth();
-  const navigate = useNavigate();
+type ProviderProps = {
+  children: ReactElement<unknown>;
+};
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  return (
-    <nav>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/pricing">Pricing</Link>
-        </li>
-      </ul>
-      {authed && <button onClick={handleLogout}>Logout</button>}
-    </nav>
-  );
-}
-
-function RequireAuth({ children }) {
+function RequireAuth({ children }: ProviderProps) {
   const { authed } = useAuth();
   const location = useLocation();
   return authed === true ? (
     children
   ) : (
-    <Navigate to="/login" replace state={{ path: location.pathname }} />
+    <Navigate to='/login' replace state={{ path: location.pathname }} />
   );
 }
 
 export default function App() {
   const { authed } = useAuth();
-  console.log( authed );
   return (
     <div>
-      <ResponsiveAppBar/> 
+      <ResponsiveAppBar />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path='/' element={authed ? <HomeAuth /> : <Home />} />
         <Route
-          path="/dashboard"
+          path='/calendar/:id'
           element={
             <RequireAuth>
-              <Calendar/>
+              <Calendar />
             </RequireAuth>
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path='/dashboard'
+          element={
+            <RequireAuth>
+              <Calendar />
+            </RequireAuth>
+          }
+        />
+        <Route path='/login' element={<Login />} />
+        <Route path='/sign-up' element={<SignUp />} />
       </Routes>
     </div>
   );
