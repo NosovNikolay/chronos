@@ -1,6 +1,8 @@
 import '../../styles/flatly/theme/bootstrap.css';
 import '@fullcalendar/react/dist/vdom';
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+
 import FullCalendar, {
   EventApi,
   DateSelectArg,
@@ -47,6 +49,16 @@ const Calendar = () => {
     calendarApi.unselect(); // clear date selection
     console.log(createEventId());
     if (title) {
+      toast.success('Event added', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+        });
       calendarApi.addEvent({
         id: createEventId(),
         title,

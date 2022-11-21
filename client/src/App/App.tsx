@@ -53,7 +53,6 @@ export default function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/sign-up' element={<SignUp />} />
         </Routes>
-      <div>modal</div>
       </div>
     </RemoveScroll>
   );
