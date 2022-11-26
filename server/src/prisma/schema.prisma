@@ -12,4 +12,33 @@ model User {
   email String @unique @db.VarChar(50)
   username String @db.VarChar(50)
   password String @db.VarChar(255)
+  calendar UsersOnCalendars[]
+}
+
+model Calendar {
+  id String @db.Uuid @id @default(uuid())
+  user  UsersOnCalendars[]
+}
+
+model UsersOnCalendars {
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String 
+  calendar   Calendar @relation(fields: [calendarId], references: [id])
+  calendarId String 
+  @@id([userId, calendarId])
+}
+
+model Event {
+  id    String @db.Uuid @id @default(uuid())
+  title String @db.VarChar(50)
+  start DateTime 
+  end String @db.VarChar(255)
+  isFullDayEvent Boolean
+  type EventType
+}
+
+enum EventType {
+  ARRANGEMENT
+  REMINDER
+  TASK
 }
