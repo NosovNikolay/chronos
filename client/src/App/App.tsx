@@ -5,7 +5,12 @@ import SignUp from './components/auth/SignUp';
 import Calendar from './components/calendar/Calendar';
 import ResponsiveAppBar from './components/navbar/Navbar';
 import useAuth from './hooks/useAuth';
-import {RemoveScroll} from 'react-remove-scroll';
+import { RemoveScroll } from 'react-remove-scroll';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import PageNotFound from './components/404/PageNotFound';
+import Dashboard from './components/dashboard/dashboard';
+
 // Description for unauth user
 const Home = () => <h1>About page</h1>;
 // Dashboard with calendars
@@ -46,14 +51,25 @@ export default function App() {
             path='/dashboard'
             element={
               <RequireAuth>
-                <Calendar />
+                <Dashboard/>
               </RequireAuth>
             }
           />
           <Route path='/login' element={<Login />} />
           <Route path='/sign-up' element={<SignUp />} />
+          <Route path='*' element={<PageNotFound />} />
         </Routes>
       </div>
+      <ToastContainer position="bottom-center"
+        autoClose={5000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover={false}
+        theme="light"/>
     </RemoveScroll>
   );
 }
