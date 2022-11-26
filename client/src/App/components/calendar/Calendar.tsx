@@ -1,8 +1,8 @@
 import '../../styles/flatly/theme/bootstrap.css';
 import '@fullcalendar/react/dist/vdom';
 import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import FullCalendar, {
   EventApi,
   DateSelectArg,
@@ -17,12 +17,15 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { INITIAL_EVENTS, createEventId } from '../../utils/event-utils';
+import { useParams } from 'react-router-dom';
 interface DemoAppState {
   weekendsVisible: boolean;
   currentEvents: EventApi[];
 }
 
-const Calendar = () => {
+const Calendar = ()  => {
+  const { id } = useParams();
+  console.log( id );
   const [state, setState] = useState<DemoAppState>({
     weekendsVisible: true,
     currentEvents: [],
@@ -36,29 +39,16 @@ const Calendar = () => {
   };
 
   const handleChange = (info: EventDropArg) => {
-    console.log('change hanlde');
     console.log(info);
   };
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
-    console.log('delete handle');
-    console.log(selectInfo);
     const title = prompt('Please enter a new title for your event');
     const calendarApi = selectInfo.view.calendar;
 
     calendarApi.unselect(); // clear date selection
-    console.log(createEventId());
     if (title) {
-      toast.success('Event added', {
-        position: 'bottom-center',
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-        });
+      toast.success('🦄 Wow so easy!');
       calendarApi.addEvent({
         id: createEventId(),
         title,
@@ -71,10 +61,10 @@ const Calendar = () => {
     }
   };
 
-  const handleDrop = (dropInfo :EventChangeArg) => {
+  const handleDrop = (dropInfo: EventChangeArg) => {
     console.log(dropInfo);
     console.log('drop handle');
-  }
+  };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     console.log('delete handle');
@@ -85,7 +75,7 @@ const Calendar = () => {
   };
 
   const handleEvents = (events: EventApi[]) => {
-    console.log( events );
+    console.log(events);
     setState({
       currentEvents: events,
       weekendsVisible: state.weekendsVisible,

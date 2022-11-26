@@ -39,7 +39,7 @@ export const ModalInfosEventCalendar = ({
       });
     } else {
       setTitle('');
-      setCardColor({backgroundColor: '#039be5', textColor: '#ffffff'});
+      setCardColor({ backgroundColor: '#039be5', textColor: '#ffffff' });
     }
   }, [eventInfos, isEditCard]);
 
@@ -127,7 +127,12 @@ export const ModalInfosEventCalendar = ({
   return (
     <Modal open={open} onClose={handleClose}>
       <BoxContainer>
-        <TextField label={'Adicionar título'} value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
+        <TextField
+          label={'Adicionar título'}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+        />
 
         <SelectColors>
           {ListColorsCard.map((color, index) => (
@@ -138,8 +143,8 @@ export const ModalInfosEventCalendar = ({
               onClick={() => handleSelectCardColor(color)}
             >
               <input
-                type="radio"
-                name="cardColor"
+                type='radio'
+                name='cardColor'
                 checked={color.backgroundColor === cardColor.backgroundColor}
               />
             </BackgroundColorRounded>
@@ -147,7 +152,7 @@ export const ModalInfosEventCalendar = ({
         </SelectColors>
 
         <Button
-          variant="contained"
+          variant='contained'
           fullWidth
           onClick={isEditCard ? handleUpdatedEvent : handleAddedEvent}
           sx={{ marginTop: '0.5rem' }}
@@ -156,7 +161,12 @@ export const ModalInfosEventCalendar = ({
         </Button>
 
         {isEditCard && (
-          <Button variant="contained" fullWidth sx={{ marginTop: '0.5rem' }} onClick={handleDeleteEvent}>
+          <Button
+            variant='contained'
+            fullWidth
+            sx={{ marginTop: '0.5rem' }}
+            onClick={handleDeleteEvent}
+          >
             Excluir evento
           </Button>
         )}

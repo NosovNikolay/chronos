@@ -15,6 +15,9 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import '../../styles/auth.scss';
 import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme();
 
@@ -35,15 +38,35 @@ export default function Login() {
     validationSchema: loginSchema,
     onSubmit: async (data) => {
       // types errors
-      const result = await login(data.email, data.password);
+      login(data.email, data.password)
+        .then((data) => {
+          localStorage.setItem('auth', '123');
+          navigate('/dashboard');
+        })
+        .catch((err) => {
+          if (axios.isAxiosError(err)) {
+            toast.error(err.response?.data.message);
+          } else {
+            toast.error('Opps, something went wrong', {
+              position: 'bottom-center',
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light',
+            });
+          }
+        });
       // bad types + bad condition
-      if (result.status === 201) {
-        // mock token for now, then will receive it from api
-        localStorage.setItem('auth', '123');
-        navigate('/dashboard');
-      } else {
-        setResponceError(result.message);
-      }
+      // if (result.status === 201) {
+      //   // mock token for now, then will receive it from api
+      //   localStorage.setItem('auth', '123');
+      //   navigate('/dashboard');
+      // } else {
+      //   setResponceError(result.message);
+      // }
     },
   });
 
