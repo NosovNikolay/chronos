@@ -18,18 +18,22 @@ model User {
 model Calendar {
   id  String @db.Uuid @id @default(uuid())
   users  User[] @relation
+  events CalendarEvent[]
 }
 
-model Event {
+model CalendarEvent {
+  calendar Calendar @relation(fields: [calendarId], references: [id])
+  calendarId   String @db.Uuid
   id    String @db.Uuid @id @default(uuid())
   title String @db.VarChar(50)
   start DateTime 
-  end String @db.VarChar(255)
-  isFullDayEvent Boolean
-  type EventType
+  end DateTime
+  isFullDay Boolean
+  type CalendarEventType
+  @@unique([calendarId, id])
 }
 
-enum EventType {
+enum CalendarEventType {
   ARRANGEMENT
   REMINDER
   TASK
