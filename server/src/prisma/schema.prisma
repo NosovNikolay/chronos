@@ -8,24 +8,16 @@ datasource db {
 }
 
 model User {
-  id    String @db.Uuid @id @default(uuid())
+  id     String @db.Uuid @id @default(uuid())
   email String @unique @db.VarChar(50)
   username String @db.VarChar(50)
   password String @db.VarChar(255)
-  calendar UsersOnCalendars[]
+  calendars Calendar[] @relation
 }
 
 model Calendar {
-  id String @db.Uuid @id @default(uuid())
-  user  UsersOnCalendars[]
-}
-
-model UsersOnCalendars {
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String 
-  calendar   Calendar @relation(fields: [calendarId], references: [id])
-  calendarId String 
-  @@id([userId, calendarId])
+  id  String @db.Uuid @id @default(uuid())
+  users  User[] @relation
 }
 
 model Event {

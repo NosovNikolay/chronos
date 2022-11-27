@@ -1205,7 +1205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:4.6.1":
+"@prisma/client@npm:^4.6.1":
   version: 4.6.1
   resolution: "@prisma/client@npm:4.6.1"
   dependencies:
@@ -2601,7 +2601,7 @@ __metadata:
     "@nestjs/platform-fastify": ^9.2.0
     "@nestjs/schematics": ^8.0.0
     "@nestjs/testing": ^8.0.0
-    "@prisma/client": 4.6.1
+    "@prisma/client": ^4.6.1
     "@types/jest": 27.5.0
     "@types/node": ^16.0.0
     "@types/passport-jwt": ^3.0.7
