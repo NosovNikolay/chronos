@@ -6,8 +6,19 @@ import { Injectable } from '@nestjs/common';
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({ data });
+  async createWithDefaultCalendar(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({
+      data: {
+        ...data,
+        calendars: {
+          create: [
+            {
+              title: `${data.username} root calendar`,
+            },
+          ],
+        },
+      },
+    });
   }
 
   async getByEmail(email: string): Promise<User> {

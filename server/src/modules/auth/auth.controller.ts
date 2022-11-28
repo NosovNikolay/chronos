@@ -13,8 +13,10 @@ export class AuthController {
   async register(@Body() singUpDto: SignUpRequestDto): Promise<UserResponseDto> {
     try {
       const user = await this.authService.registration(singUpDto);
+      console.log("user", user);
       return UserResponseDto.mapFrom(user);
-    } catch {
+    } catch (error) {
+      console.log(error);
       throw new HttpException('User already exists', HttpStatus.FORBIDDEN);
     }
   }
