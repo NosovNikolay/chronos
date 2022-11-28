@@ -15,7 +15,7 @@ import { CreateCalendarEventRequestDto, UpdateCalendarEventRequestDto } from '@m
 import { CalendarEvent } from '@prisma/client';
 import { JwtAuthGuard } from '@shared/guards';
 
-@Controller('calendar-event')
+@Controller('calendar-events')
 export class CalendarEventController {
   constructor(private readonly calendarEventService: CalendarEventService) {}
 

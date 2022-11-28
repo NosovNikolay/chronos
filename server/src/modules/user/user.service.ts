@@ -6,8 +6,8 @@ import { Prisma, User } from '@prisma/client';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
-    return this.userRepository.create(data);
+  async createWithDefaultCalendar(data: Prisma.UserCreateInput): Promise<User> {
+    return this.userRepository.createWithDefaultCalendar(data);
   }
 
   async getByEmail(email: string): Promise<User> {

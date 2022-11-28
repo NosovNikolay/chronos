@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, Calendar } from '@prisma/client';
 import { Expose, plainToClass } from 'class-transformer';
 
 export class UserResponseDto {
@@ -11,7 +11,11 @@ export class UserResponseDto {
   @Expose()
   username: string;
 
+  @Expose()
+  calendars: Calendar[];
+
   public static mapFrom(data: User): UserResponseDto {
+    console.log(data);
     return plainToClass(UserResponseDto, data, { excludeExtraneousValues: true });
   }
 }
