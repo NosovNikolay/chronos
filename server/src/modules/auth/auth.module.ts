@@ -16,7 +16,6 @@ import { appConfig } from '@shared/configs';
     }),
   ],
   controllers: [AuthController],
-
   providers: [AuthService, CryptoService, JwtStrategy],
 })
 export class AuthModule {}
