@@ -24,7 +24,6 @@ const theme = createTheme();
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [responseError, setResponceError] = useState('');
   const loginSchema = Yup.object({
     email: Yup.string().email().required('Required'),
     password: Yup.string().required('Required').min(8),
@@ -37,11 +36,11 @@ export default function Login() {
     },
     validationSchema: loginSchema,
     onSubmit: async (data) => {
-      // types errors
       login(data.email, data.password)
-        .then((data) => {
-          localStorage.setItem('auth', '123');
-          navigate('/dashboard');
+        .then((response) => {
+          localStorage.setItem('auth', response.data.token);
+          toast.success('You have successfully logged into your account');
+          navigate('/calendar');
         })
         .catch((err) => {
           if (axios.isAxiosError(err)) {
@@ -59,15 +58,7 @@ export default function Login() {
             });
           }
         });
-      // bad types + bad condition
-      // if (result.status === 201) {
-      //   // mock token for now, then will receive it from api
-      //   localStorage.setItem('auth', '123');
-      //   navigate('/dashboard');
-      // } else {
-      //   setResponceError(result.message);
-      // }
-    },
+      },
   });
 
   return (
@@ -121,7 +112,6 @@ export default function Login() {
             <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
               Log In
             </Button>
-            {responseError ? <div className='errorInputLog'>{responseError}</div> : null}
             <Grid container justifyContent='flex-end'>
               <Grid item>
                 <Link href='#' variant='body2'>

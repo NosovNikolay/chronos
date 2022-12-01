@@ -34,10 +34,10 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
+  // TODO: add event logout button
   return (
     <AppBar style={{ background: '#2E3B55' }} position='static'>
-      <Container maxWidth='xl'>
+      <Container maxWidth={false}>
         <Toolbar disableGutters>
           <CalendarMonthIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography

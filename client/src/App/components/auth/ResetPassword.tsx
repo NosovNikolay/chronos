@@ -26,10 +26,6 @@ export default function ResetPassword() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email')?.toString();
-    console.log({
-      email: data.get('email')?.toString(),
-      password: data.get('password'),
-    });
   };
 
   return (

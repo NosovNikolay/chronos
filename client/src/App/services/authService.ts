@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-// TODO: rm service or create another way to handle axios
+// TODO: rm it if unused
 interface LoginData {
   email: string;
   password: string;
 }
-// unused now
 
 interface RegistationData extends LoginData {
   username: string;
-  // wantsRecieveNotifications: boolean,
 }
 
 class AuthService {

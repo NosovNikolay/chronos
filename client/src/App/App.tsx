@@ -9,11 +9,10 @@ import { RemoveScroll } from 'react-remove-scroll';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PageNotFound from './components/404/PageNotFound';
-import Dashboard from './components/dashboard/dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 
-// Description for unauth user
+// TODO: add about pages
 const Home = () => <h1>About page</h1>;
-// Dashboard with calendars
 const HomeAuth = () => <h1>About page auth</h1>;
 
 type ProviderProps = {
@@ -36,7 +35,6 @@ export default function App() {
     <RemoveScroll>
       <div>
         <ResponsiveAppBar />
-
         <Routes>
           <Route path='/' element={authed ? <HomeAuth /> : <Home />} />
           <Route
@@ -48,10 +46,10 @@ export default function App() {
             }
           />
           <Route
-            path='/dashboard'
+            path='/calendar'
             element={
               <RequireAuth>
-                <Dashboard/>
+                <Dashboard />
               </RequireAuth>
             }
           />
@@ -60,7 +58,8 @@ export default function App() {
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </div>
-      <ToastContainer position="bottom-center"
+      <ToastContainer
+        position='bottom-center'
         autoClose={5000}
         hideProgressBar
         newestOnTop={false}
@@ -69,7 +68,8 @@ export default function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover={false}
-        theme="light"/>
+        theme='light'
+      />
     </RemoveScroll>
   );
 }

@@ -1,10 +1,35 @@
-import { Button, Modal, TextField } from '@mui/material';
+import { Button, Grid, Modal, TextField } from '@mui/material';
 import { CalendarApi } from '@fullcalendar/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { ColorsCard, ListColorsCard } from '../../constants/ListColorsCard';
-
 import { BackgroundColorRounded, BoxContainer, SelectColors } from './styles';
+import axios from 'axios';
+import { env } from '../../config/env';
+import useAuth from '../../hooks/useAuth';
+
+export enum EventType {
+  ARRANGMENT='ARRANGEMENT',
+  TASK='TASK',
+  REMINDER='REMINDER',
+}
+
+export const EventTypes = {
+  [EventType.ARRANGMENT]: 'ARRANGEMENT',
+  [EventType.TASK]: 'TASK',
+  [EventType.REMINDER]: 'REMINDER',
+};
+
+export type EventAttributes = {
+  backgroundColor: string;
+  textColor: string;
+  type: EventType;
+};
+
+export const ListColorsCard: EventAttributes[] = [
+  { backgroundColor: '#d50000', textColor: '#ffffff', type: EventType.REMINDER },
+  { backgroundColor: '#039be5', textColor: '#ffffff', type: EventType.TASK },
+  { backgroundColor: '#9370DB', textColor: '#ffffff', type: EventType.ARRANGMENT },
+];
 
 interface ICardColor {
   backgroundColor: string;
@@ -14,36 +39,39 @@ interface ICardColor {
 interface IModalInfosEventCalendaryProps {
   open: boolean;
   handleClose: () => void;
-  eventInfos: any;
+  eventInfo: any;
   isEditCard: boolean;
+  calendarId: string;
 }
 
 export const ModalInfosEventCalendar = ({
   handleClose,
   open,
-  eventInfos,
+  eventInfo,
   isEditCard,
+  calendarId,
 }: IModalInfosEventCalendaryProps) => {
   const [title, setTitle] = useState<string>('');
   const [cardColor, setCardColor] = useState<ICardColor>({
     backgroundColor: '#039be5',
     textColor: '#ffffff',
   });
+  const { token } = useAuth();
 
   useEffect(() => {
     if (isEditCard) {
-      setTitle(eventInfos?.event?.title);
+      setTitle(eventInfo?.event?.title);
       setCardColor({
-        backgroundColor: eventInfos?.event?.backgroundColor,
-        textColor: eventInfos?.event?.textColor,
+        backgroundColor: eventInfo?.event?.backgroundColor,
+        textColor: eventInfo?.event?.textColor,
       });
     } else {
       setTitle('');
       setCardColor({ backgroundColor: '#039be5', textColor: '#ffffff' });
     }
-  }, [eventInfos, isEditCard]);
+  }, [eventInfo, isEditCard]);
 
-  const handleSelectCardColor = (color: ColorsCard) => {
+  const handleSelectCardColor = (color: EventAttributes) => {
     setCardColor({
       backgroundColor: color.backgroundColor,
       textColor: color.textColor,
@@ -52,28 +80,34 @@ export const ModalInfosEventCalendar = ({
 
   const handleAddedEvent = async () => {
     try {
-      const calendarApi: CalendarApi = eventInfos.view.calendar;
-
-      const eventCalendar = await createEventCalendar({
-        eventCalendar: {
-          title: title === '' ? 'Sem título' : title,
-          start: eventInfos.startStr,
-          end: eventInfos.endStr,
-          backgroundColor: cardColor.backgroundColor,
-          textColor: cardColor.textColor,
-        },
+      const calendarApi: CalendarApi = eventInfo.view.calendar;
+      axios.post(`${env.VITE_APP_API}/calendar-events/${calendarId}`, {
+        title: title,
+        start: new Date(eventInfo.startStr).toISOString(),
+        end: new Date(eventInfo.endStr).toISOString(),
+        isFullDay: eventInfo.allDay,
+        type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type
+      }, {
+        headers: {
+          'Authorization': 'Bearer ' + token,
+        }
+      }).then((response) => {
+        const data = response.data;
+        toast.success('Event added succesfully')
+        calendarApi.addEvent({
+          id: data.id,
+          title: data.title,
+          start: data.isFullDay ? data.start.split('T')[0] : data.start,
+          end: data.isFullDay ? data.end.split('T')[0] : data.end,
+          allDay: data.isFullDay,
+          backgroundColor: ListColorsCard.find((e) => e.type === data.type)?.backgroundColor || '#039be5',
+          textColor: '#ffffff',
+        });
       });
-
-      calendarApi.addEvent({
-        id: eventCalendar._id,
-        title: eventCalendar.title,
-        start: eventCalendar.start,
-        end: eventCalendar.endStr,
-        backgroundColor: cardColor.backgroundColor,
-        textColor: cardColor.textColor,
-      });
+     
     } catch (err) {
-      toast.error('Houve um erro ao criar um evento');
+      console.log(err);
+      toast.error('Ooops, something went wrong');
     } finally {
       setTitle('');
       handleClose();
@@ -81,54 +115,50 @@ export const ModalInfosEventCalendar = ({
   };
 
   const handleDeleteEvent = async () => {
-    try {
-      await deleteEventCalendar({ id: eventInfos.event.id });
-      eventInfos.event.remove();
-    } catch (error) {
-      toast.error('Houve um erro ao deletar o evento');
-    } finally {
-      setTitle('');
-      handleClose();
-    }
+    // try {
+    //   await deleteEventCalendar({ id: eventInfos.event.id });
+    //   eventInfos.event.remove();
+    // } catch (error) {
+    //   toast.error('Houve um erro ao deletar o evento');
+    // } finally {
+    //   setTitle('');
+    //   handleClose();
+    // }
   };
 
   const handleUpdatedEvent = async () => {
-    try {
-      const calendarApi: CalendarApi = eventInfos.view.calendar;
-
-      const eventCalendarUpdated = {
-        eventCalendar: {
-          _id: eventInfos.event.id,
-          title: title !== '' ? title : 'Sem título',
-          start: eventInfos.event.startStr,
-          end: eventInfos.event.endStr,
-          backgroundColor: cardColor.backgroundColor,
-          textColor: cardColor.textColor,
-        },
-      };
-
-      const currentEvent = calendarApi.getEventById(eventInfos.event.id);
-
-      if (currentEvent) {
-        currentEvent.setProp('title', title !== '' ? title : 'Sem título');
-        currentEvent.setProp('backgroundColor', cardColor.backgroundColor);
-        currentEvent.setProp('textColor', cardColor.textColor);
-      }
-
-      await updateEventCalendar(eventCalendarUpdated);
-    } catch (error) {
-      toast.error('Houve um erro ao atualizar o evento');
-    } finally {
-      setTitle('');
-      handleClose();
-    }
+    // try {
+    //   const calendarApi: CalendarApi = eventInfos.view.calendar;
+    //   const eventCalendarUpdated = {
+    //     eventCalendar: {
+    //       _id: eventInfos.event.id,
+    //       title: title !== '' ? title : 'Sem título',
+    //       start: eventInfos.event.startStr,
+    //       end: eventInfos.event.endStr,
+    //       backgroundColor: cardColor.backgroundColor,
+    //       textColor: cardColor.textColor,
+    //     },
+    //   };
+    //   const currentEvent = calendarApi.getEventById(eventInfos.event.id);
+    //   if (currentEvent) {
+    //     currentEvent.setProp('title', title !== '' ? title : 'Sem título');
+    //     currentEvent.setProp('backgroundColor', cardColor.backgroundColor);
+    //     currentEvent.setProp('textColor', cardColor.textColor);
+    //   }
+    //   await updateEventCalendar(eventCalendarUpdated);
+    // } catch (error) {
+    //   toast.error('Houve um erro ao atualizar o evento');
+    // } finally {
+    //   setTitle('');
+    //   handleClose();
+    // }
   };
 
   return (
     <Modal open={open} onClose={handleClose}>
       <BoxContainer>
         <TextField
-          label={'Adicionar título'}
+          label={'Event Title'}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           fullWidth
@@ -136,18 +166,19 @@ export const ModalInfosEventCalendar = ({
 
         <SelectColors>
           {ListColorsCard.map((color, index) => (
-            <BackgroundColorRounded
-              key={index}
-              selected={false}
-              color={color.backgroundColor}
-              onClick={() => handleSelectCardColor(color)}
-            >
-              <input
-                type='radio'
-                name='cardColor'
-                checked={color.backgroundColor === cardColor.backgroundColor}
-              />
-            </BackgroundColorRounded>
+            <Grid style={{ margin: '10px' }} container spacing={2} key={index}>
+              <BackgroundColorRounded
+                selected={false}
+                color={color.backgroundColor}
+                onClick={() => handleSelectCardColor(color)}
+              >
+                <input
+                  type='radio'
+                  name='cardColor'
+                />
+              </BackgroundColorRounded>
+              <p style={{ marginLeft: '10px' }}>{EventTypes[color.type]}</p>
+            </Grid>
           ))}
         </SelectColors>
 
@@ -157,7 +188,7 @@ export const ModalInfosEventCalendar = ({
           onClick={isEditCard ? handleUpdatedEvent : handleAddedEvent}
           sx={{ marginTop: '0.5rem' }}
         >
-          {isEditCard ? 'Atualizar evento' : 'Adicionar evento'}
+          {isEditCard ? 'Update Event' : 'Create Event'}
         </Button>
 
         {isEditCard && (
@@ -167,7 +198,7 @@ export const ModalInfosEventCalendar = ({
             sx={{ marginTop: '0.5rem' }}
             onClick={handleDeleteEvent}
           >
-            Excluir evento
+            Delete Event
           </Button>
         )}
       </BoxContainer>

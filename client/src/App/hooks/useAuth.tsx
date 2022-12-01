@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import * as React from 'react';
 import { env } from '../config/env';
 
+// TODO: replace any with types
 export interface LoginData {
   email: string;
   password: string;
@@ -11,30 +12,21 @@ type ProviderProps = {
   children?: React.ReactNode;
 };
 
-interface errorAuth {
-  statusCode: number,
-  message: string,
-  error: string
-}
-
-interface loginSuccess {
-  statusCode: number,
-  token: string
-}
-
 export interface RegistationData extends LoginData {
   username: string;
   // wantsRecieveNotifications: boolean,
 }
 interface AuthContextType {
   authed: boolean;
-  login: (email: string, password: string) => Promise<loginSuccess>;
+  token: string | null;
+  login: (email: string, password: string) => Promise<any>;
   logout: () => Promise<unknown>;
 }
 
 const initialState: AuthContextType = {
   authed: false,
-  login: async () => new Promise<loginSuccess>(() => { null }),
+  token: null,
+  login: async () => new Promise<any>(() => { null }),
   logout: async () =>
     console.error(
       'No AuthProvider supplied. Wrap this component with a AuthProvider to use this functionality.',
@@ -48,19 +40,20 @@ function useAuth() {
   const [authed, setAuthed] = React.useState(token ? true : false);
   return {
     authed,
+    token,
     async login(email: string, password: string) {
-      const responce = axios.post<loginSuccess, loginSuccess>(
-          `${env.VITE_APP_API}/auth/sign-in`,
-          {
-            email,
-            password,
-          },
-          {
-            withCredentials: true,
-          },
-        );
-        setAuthed(true);
-        return responce;
+      const responce = axios.post<any>(
+        `${env.VITE_APP_API}/auth/sign-in`,
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      setAuthed(true);
+      return responce;
     },
     logout() {
       return new Promise(() => {

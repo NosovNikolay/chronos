@@ -61,3 +61,26 @@ b {
   display: flex;
   justify-content: center;
 }
+
+.modal-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 20%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow: hidden;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.left {
+  width: 280px;
+  background-color: white;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
