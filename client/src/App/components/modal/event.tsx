@@ -133,31 +133,35 @@ export const ModalInfosEventCalendar = ({
   };
 
   const handleUpdatedEvent = async () => {
-    // try {
-    //   const calendarApi: CalendarApi = eventInfos.view.calendar;
-    //   const eventCalendarUpdated = {
-    //     eventCalendar: {
-    //       _id: eventInfos.event.id,
-    //       title: title !== '' ? title : 'Sem título',
-    //       start: eventInfos.event.startStr,
-    //       end: eventInfos.event.endStr,
-    //       backgroundColor: cardColor.backgroundColor,
-    //       textColor: cardColor.textColor,
-    //     },
-    //   };
-    //   const currentEvent = calendarApi.getEventById(eventInfos.event.id);
-    //   if (currentEvent) {
-    //     currentEvent.setProp('title', title !== '' ? title : 'Sem título');
-    //     currentEvent.setProp('backgroundColor', cardColor.backgroundColor);
-    //     currentEvent.setProp('textColor', cardColor.textColor);
-    //   }
-    //   await updateEventCalendar(eventCalendarUpdated);
-    // } catch (error) {
-    //   toast.error('Houve um erro ao atualizar o evento');
-    // } finally {
-    //   setTitle('');
-    //   handleClose();
-    // }
+    try {
+      const calendarApi: CalendarApi = eventInfo.view.calendar;
+      const eventCalendarUpdated = {
+          id: eventInfo.event.id,
+          title: title || 'Empty title',
+          start: eventInfo.event.startStr,
+          end: eventInfo.event.endStr,
+          type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type,
+      };
+      const currentEvent = calendarApi.getEventById(eventInfo.event.id);
+      if (currentEvent?.backgroundColor === 'green') {
+        toast.error('Can not change holiday');
+        setTitle('');
+        handleClose();
+        return;
+      }
+      // if (currentEvent) {
+      //   currentEvent.setProp('title', title !== '' ? title : '123');
+      //   currentEvent.setProp('backgroundColor', cardColor.backgroundColor);
+      //   currentEvent.setProp('textColor', cardColor.textColor);
+      // }
+      console.log(eventCalendarUpdated);
+      // await updateEventCalendar(eventCalendarUpdated);
+    } catch (error) {
+      toast.error('');
+    } finally {
+      setTitle('');
+      handleClose();
+    }
   };
 
   return (
