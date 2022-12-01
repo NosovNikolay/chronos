@@ -2,10 +2,10 @@ import { Button, Grid, Modal, TextField } from '@mui/material';
 import { CalendarApi } from '@fullcalendar/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { BackgroundColorRounded, BoxContainer, SelectColors } from './styles';
 import axios from 'axios';
 import { env } from '../../config/env';
 import useAuth from '../../hooks/useAuth';
+import '../../styles/modal.scss'
 
 export enum EventType {
   ARRANGMENT = 'ARRANGEMENT',
@@ -162,7 +162,7 @@ export const ModalInfosEventCalendar = ({
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <BoxContainer>
+      <div className='box'>
         <TextField
           label={'Event Title'}
           value={title}
@@ -170,20 +170,19 @@ export const ModalInfosEventCalendar = ({
           fullWidth
         />
 
-        <SelectColors>
+        <div className='select_color_div'>
           {ListColorsCard.map((color, index) => (
             <Grid style={{ margin: '10px' }} container spacing={2} key={index}>
-              <BackgroundColorRounded
-                selected={false}
-                color={color.backgroundColor}
+              <div className='backgroundColorSelect'
+                style={{ backgroundColor: color.backgroundColor}}
                 onClick={() => handleSelectCardColor(color)}
               >
                 <input type='radio' name='cardColor' />
-              </BackgroundColorRounded>
+              </div>
               <p style={{ marginLeft: '10px' }}>{EventTypes[color.type]}</p>
             </Grid>
           ))}
-        </SelectColors>
+        </div>
 
         <Button
           variant='contained'
@@ -204,7 +203,7 @@ export const ModalInfosEventCalendar = ({
             Delete Event
           </Button>
         )}
-      </BoxContainer>
+      </div>
     </Modal>
   );
 };

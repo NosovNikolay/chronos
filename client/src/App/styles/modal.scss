@@ -1,7 +1,4 @@
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
-// TODO: move it to scss styles
-export const BoxContainer = styled(Box)`
+.box {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -14,25 +11,19 @@ export const BoxContainer = styled(Box)`
   padding: 1rem;
   &:focus {
     outline: none;
-  }
-`;
+  };
+}
 
-export const SelectColors = styled('div')`
+.select_color_div {
   grid-template-columns: repeat(5, 40px);
   justify-content: center;
   place-items: center;
   padding-top: 10px;
-`;
+}
 
-type BackgroundColorRoundedProps = {
-  color: string;
-  selected: boolean;
-};
-
-export const BackgroundColorRounded = styled('div')<BackgroundColorRoundedProps>`
+.backgroundColorSelect {
   width: 20px;
   height: 20px;
-  background-color: ${(props) => props.color};
   border-radius: 50%;
   justify-content: center;
   align-items: center;
@@ -40,8 +31,8 @@ export const BackgroundColorRounded = styled('div')<BackgroundColorRoundedProps>
     position: relative;
     width: 20px;
     height: 20px;
-    outline: none;
     -webkit-appearance: none;
+    outline: none;
     border-radius: 50%;
     cursor: pointer;
   }
@@ -49,4 +40,4 @@ export const BackgroundColorRounded = styled('div')<BackgroundColorRoundedProps>
     outline: 1px solid #000;
     cursor: pointer;
   }
-`;
+}
