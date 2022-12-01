@@ -15,7 +15,6 @@ export class UserResponseDto {
   calendars: Calendar[];
 
   public static mapFrom(data: User): UserResponseDto {
-    console.log(data);
     return plainToClass(UserResponseDto, data, { excludeExtraneousValues: true });
   }
 }

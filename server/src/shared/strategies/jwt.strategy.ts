@@ -8,7 +8,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       secretOrKey: appConfig.getAppSecret(),
     });
   }

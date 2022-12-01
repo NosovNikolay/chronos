@@ -4,15 +4,21 @@ import { Calendar, User } from '@prisma/client';
 import { CreateCalendarRequestDto } from '@modules/calendar/dto';
 import { AuthUser } from '@shared/decorators';
 import { JwtAuthGuard } from '@shared/guards';
+import ListCalendsarsResponseClass from '@shared/response-classes/list.responce.dto';
 
 @Controller('calendars')
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
-
+  // pagination
+  // items :{}
+  // nextPageToken: ""
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getAll(@AuthUser() user: User): Promise<Calendar[]> {
-    return await this.calendarService.getAll(user.id);
+  async getAll(@AuthUser() user: User): Promise<ListCalendsarsResponseClass> {
+    const calendars = await this.calendarService.getAll(user.id);
+    return {
+      items: calendars,
+    };
   }
 
   @Delete(':id')
