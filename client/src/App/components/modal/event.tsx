@@ -8,9 +8,9 @@ import { env } from '../../config/env';
 import useAuth from '../../hooks/useAuth';
 
 export enum EventType {
-  ARRANGMENT='ARRANGEMENT',
-  TASK='TASK',
-  REMINDER='REMINDER',
+  ARRANGMENT = 'ARRANGEMENT',
+  TASK = 'TASK',
+  REMINDER = 'REMINDER',
 }
 
 export const EventTypes = {
@@ -81,30 +81,36 @@ export const ModalInfosEventCalendar = ({
   const handleAddedEvent = async () => {
     try {
       const calendarApi: CalendarApi = eventInfo.view.calendar;
-      axios.post(`${env.VITE_APP_API}/calendar-events/${calendarId}`, {
-        title: title,
-        start: new Date(eventInfo.startStr).toISOString(),
-        end: new Date(eventInfo.endStr).toISOString(),
-        isFullDay: eventInfo.allDay,
-        type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type
-      }, {
-        headers: {
-          'Authorization': 'Bearer ' + token,
-        }
-      }).then((response) => {
-        const data = response.data;
-        toast.success('Event added succesfully')
-        calendarApi.addEvent({
-          id: data.id,
-          title: data.title,
-          start: data.isFullDay ? data.start.split('T')[0] : data.start,
-          end: data.isFullDay ? data.end.split('T')[0] : data.end,
-          allDay: data.isFullDay,
-          backgroundColor: ListColorsCard.find((e) => e.type === data.type)?.backgroundColor || '#039be5',
-          textColor: '#ffffff',
+      axios
+        .post(
+          `${env.VITE_APP_API}/calendar-events/${calendarId}`,
+          {
+            title: title,
+            start: new Date(eventInfo.startStr).toISOString(),
+            end: new Date(eventInfo.endStr).toISOString(),
+            isFullDay: eventInfo.allDay,
+            type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((response) => {
+          const data = response.data;
+          toast.success('Event added succesfully');
+          calendarApi.addEvent({
+            id: data.id,
+            title: data.title,
+            start: data.isFullDay ? data.start.split('T')[0] : data.start,
+            end: data.isFullDay ? data.end.split('T')[0] : data.end,
+            allDay: data.isFullDay,
+            backgroundColor:
+              ListColorsCard.find((e) => e.type === data.type)?.backgroundColor || '#039be5',
+            textColor: '#ffffff',
+          });
         });
-      });
-     
     } catch (err) {
       console.log(err);
       toast.error('Ooops, something went wrong');
@@ -172,10 +178,7 @@ export const ModalInfosEventCalendar = ({
                 color={color.backgroundColor}
                 onClick={() => handleSelectCardColor(color)}
               >
-                <input
-                  type='radio'
-                  name='cardColor'
-                />
+                <input type='radio' name='cardColor' />
               </BackgroundColorRounded>
               <p style={{ marginLeft: '10px' }}>{EventTypes[color.type]}</p>
             </Grid>

@@ -26,7 +26,10 @@ interface AuthContextType {
 const initialState: AuthContextType = {
   authed: false,
   token: null,
-  login: async () => new Promise<any>(() => { null }),
+  login: async () =>
+    new Promise<any>(() => {
+      null;
+    }),
   logout: async () =>
     console.error(
       'No AuthProvider supplied. Wrap this component with a AuthProvider to use this functionality.',

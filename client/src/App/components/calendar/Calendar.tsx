@@ -79,14 +79,11 @@ const Calendar = () => {
   //   }
   // };
 
-  const handleChange = (info: EventDropArg) => {
-  };
+  const handleChange = (info: EventDropArg) => {};
 
   useEffect(() => {
-    getEvents(token || '', id || '')
-    .then((eve) => {
-      getHolidays()
-      .then((hol) => {
+    getEvents(token || '', id || '').then((eve) => {
+      getHolidays().then((hol) => {
         const holidays: Array<any> = hol.items;
         const formatHolidays = holidays.map((element) => {
           return {
@@ -100,8 +97,8 @@ const Calendar = () => {
           return {
             id: event.id,
             title: event.title,
-            start: event.isFullDay ? event.start.split('T')[0]  : event.start,
-            end: event.isFullDay ? event.end.split('T')[0]  : event.end,
+            start: event.isFullDay ? event.start.split('T')[0] : event.start,
+            end: event.isFullDay ? event.end.split('T')[0] : event.end,
             allDay: event.isFullDay,
             color: ListColorsCard.find((e) => e.type === event.type)?.backgroundColor || '#039be5',
           };
@@ -135,8 +132,7 @@ const Calendar = () => {
     }
   };
 
-  const handleDrop = (dropInfo: EventChangeArg) => {
-  };
+  const handleDrop = (dropInfo: EventChangeArg) => {};
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
@@ -147,13 +143,17 @@ const Calendar = () => {
   const handleEvents = (events: EventApi[]) => {
     setCalendarState({
       ...calendarState,
-      currentEvents: events
+      currentEvents: events,
     });
   };
 
   return (
     <div className='demo-app'>
-      <SideBar calendarState={calendarState} setCalendarState={setCalendarState} calendarName={searchParams.get('title') || ''}/>
+      <SideBar
+        calendarState={calendarState}
+        setCalendarState={setCalendarState}
+        calendarName={searchParams.get('title') || ''}
+      />
       <ModalInfosEventCalendar
         open={modalState.isOpen}
         handleClose={modalState.handleClose}
@@ -161,44 +161,48 @@ const Calendar = () => {
         isEditCard={isEditCard}
         calendarId={id || ''}
       />
-      { calendarState.isLoading ? <CircularProgress className="loading_indicator" color="secondary" /> : (
-         <div className='demo-app-main'>
-         <FullCalendar
-           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
-           headerToolbar={{
-             left: 'prev,next today',
-             center: 'title',
-             right: 'dayGridMonth,timeGridWeek,timeGridDay',
-           }}
-           height={600}
-           titleFormat={{
-             month: 'long',
-             year: 'numeric',
-             day: '2-digit',
-             weekday: 'long',
-           }}
-           themeSystem={'standard'}
-           fixedWeekCount={false}
-           initialView='dayGridMonth'
-           editable={true}
-           selectable={true}
-           selectMirror={true}
-           dayMaxEvents={true}
-           events={calendarState.holidaysVisible ? calendarState.holidays : calendarState.personalEvents}
-           select={handleAddEventSelectAndOpenModal}
-           eventContent={renderEventContent}
-           eventClick={handleEditEventSelectAndOpenModal}
-           eventDrop={handleChange}
-           eventChange={handleDrop}
-           eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-           /* you can update a remote database when these fire:
+      {calendarState.isLoading ? (
+        <CircularProgress className='loading_indicator' color='secondary' />
+      ) : (
+        <div className='demo-app-main'>
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            }}
+            height={600}
+            titleFormat={{
+              month: 'long',
+              year: 'numeric',
+              day: '2-digit',
+              weekday: 'long',
+            }}
+            themeSystem={'standard'}
+            fixedWeekCount={false}
+            initialView='dayGridMonth'
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            events={
+              calendarState.holidaysVisible ? calendarState.holidays : calendarState.personalEvents
+            }
+            select={handleAddEventSelectAndOpenModal}
+            eventContent={renderEventContent}
+            eventClick={handleEditEventSelectAndOpenModal}
+            eventDrop={handleChange}
+            eventChange={handleDrop}
+            eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+            /* you can update a remote database when these fire:
            eventAdd={function(){}}
            eventChange={function(){}}
            eventRemove={function(){}}
            */
-         />
-       </div>
-      ) }
+          />
+        </div>
+      )}
     </div>
   );
 };
