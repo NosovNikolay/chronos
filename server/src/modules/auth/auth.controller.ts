@@ -4,6 +4,7 @@ import { SignUpRequestDto, SignInRequestDto } from '@modules/auth/dto/request';
 import { UserResponseDto } from '@modules/user/dto/response/user.response.dto';
 import { JwtAuthGuard } from '@shared/guards';
 import { FastifyReply } from 'fastify';
+import { SignInResponseDto } from './dto/responce/sign-in.responce.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,7 @@ export class AuthController {
   async register(@Body() singUpDto: SignUpRequestDto): Promise<UserResponseDto> {
     try {
       const user = await this.authService.registration(singUpDto);
-      console.log("user", user);
+      console.log('user', user);
       return UserResponseDto.mapFrom(user);
     } catch (error) {
       console.log(error);
@@ -25,10 +26,9 @@ export class AuthController {
   async login(
     @Body() signInDto: SignInRequestDto,
     @Res({ passthrough: true }) response: FastifyReply,
-  ): Promise<UserResponseDto> {
+  ): Promise<SignInResponseDto> {
     const loginResponse = await this.authService.login(signInDto);
-    response.setCookie('Access', loginResponse.accessToken, { httpOnly: false });
-    return UserResponseDto.mapFrom(loginResponse.user);
+    return SignInResponseDto.mapFrom(loginResponse.accessToken);
   }
 
   @Get('protected')
