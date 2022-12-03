@@ -2,7 +2,10 @@ import { EventApi, formatDate } from '@fullcalendar/react';
 import { Link } from 'react-router-dom';
 import { DemoAppState } from '../calendar/Calendar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Grid } from '@mui/material';
+import { Button, Checkbox, Grid } from '@mui/material';
+import { InviteToCalendarModal } from '../modal/send_invite';
+import { useDisclosure } from '../../hooks/useModal';
+import { FormControlLabel } from '@material-ui/core';
 interface SideBarProps {
   setCalendarState: React.Dispatch<React.SetStateAction<DemoAppState>>;
   calendarState: DemoAppState;
@@ -10,6 +13,7 @@ interface SideBarProps {
 }
 
 export const SideBar = (props: SideBarProps) => {
+  const modalState = useDisclosure(false);
   const renderSidebarEvent = (event: EventApi) => {
     return (
       <li key={event.id}>
@@ -18,16 +22,26 @@ export const SideBar = (props: SideBarProps) => {
       </li>
     );
   };
+  const handleInviteModal = () => {
+    modalState.handleOpen();
+  }
   const handleHolidaysToggle = () => {
     setCalendarState({
       ...calendarState,
       holidaysVisible: !calendarState.holidaysVisible,
     });
   };
-
+  const label = { };
   const { calendarState, setCalendarState, calendarName } = props;
   return (
     <div>
+      <InviteToCalendarModal
+        open={modalState.isOpen}
+        handleClose={modalState.handleClose}
+        eventInfo={'123'}
+        isEditCard={false}
+        calendarId={'123' || ''}
+      />
       <div className='demo-app-sidebar'>
         <Link to='/calendar'>
           <Grid container direction='row' justifyContent='flex-start' alignItems='center'>
@@ -39,15 +53,14 @@ export const SideBar = (props: SideBarProps) => {
           <h2>{calendarName}</h2>
           <ul></ul>
         </div>
+        <Button style={{ marginLeft: '20px' }} onClick={() => handleInviteModal()}>
+          + Add friends
+        </Button>
         <div className='demo-app-sidebar-section'>
-          <label>
-            <input
-              type='checkbox'
-              checked={calendarState.holidaysVisible}
-              onChange={handleHolidaysToggle}
-            ></input>
-            Show holidays
-          </label>
+          <FormControlLabel
+            control={<Checkbox color="success" checked={calendarState.holidaysVisible} onChange={handleHolidaysToggle} />}
+            label="Check me"
+            />
         </div>
         <div className='container'>
           <p>All Events ({calendarState.currentEvents.length})</p>

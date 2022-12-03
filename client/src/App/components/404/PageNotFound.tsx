@@ -17,7 +17,7 @@ export default function PageNotFound() {
           <Grid xs={6}>
             <Typography variant='h1'>404</Typography>
             <Typography variant='h6'>The page you’re looking for doesn’t exist.</Typography>
-            <Link to='/dashboard'>
+            <Link to='/calendar'>
               <Button variant='contained'>Back to Dashboard</Button>
             </Link>
           </Grid>

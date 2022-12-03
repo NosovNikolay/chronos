@@ -44,7 +44,7 @@ interface IModalInfosEventCalendaryProps {
   calendarId: string;
 }
 
-export const ModalInfosEventCalendar = ({
+export const ModalInfoEventCalendar = ({
   handleClose,
   open,
   eventInfo,

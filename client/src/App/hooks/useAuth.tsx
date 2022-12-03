@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import * as React from 'react';
 import { env } from '../config/env';
 

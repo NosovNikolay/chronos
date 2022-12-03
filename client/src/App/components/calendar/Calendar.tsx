@@ -7,8 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CircularProgress } from '@mui/material';
 import FullCalendar, {
   EventApi,
-  DateSelectArg,
-  EventClickArg,
   EventDropArg,
   EventContentArg,
   EventChangeArg,
@@ -18,13 +16,14 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
-import { createEventId, getHolidays } from '../../utils/event-utils';
+import { getHolidays } from '../../utils/event-utils';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDisclosure } from '../../hooks/useModal';
-import { ListColorsCard, ModalInfosEventCalendar } from '../modal/event';
+import { ListColorsCard, ModalInfoEventCalendar } from '../modal/event';
 import { SideBar } from '../sidebar/SideBar';
 import { getEvents } from '../../services/eventService';
 import useAuth from '../../hooks/useAuth';
+
 export interface DemoAppState {
   holidaysVisible: boolean;
   currentEvents: EventApi[];
@@ -79,7 +78,11 @@ const Calendar = () => {
   //   }
   // };
 
-  const handleChange = (info: EventDropArg) => {};
+  const handleDrop = (dropInfo: EventDropArg) => {
+   console.log('drop');
+
+    // console.log(dropInfo);
+  };
 
   useEffect(() => {
     getEvents(token || '', id || '').then((eve) => {
@@ -113,31 +116,10 @@ const Calendar = () => {
     });
   }, []);
 
-  const handleDateSelect = (selectInfo: DateSelectArg) => {
-    const title = prompt('Please enter a new title for your event');
-    const calendarApi = selectInfo.view.calendar;
-    console.log(selectInfo);
-    calendarApi.unselect(); // clear date selection
-    if (title) {
-      toast.success('Event added successfully');
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-        color: 'yellow',
-        textColor: 'black',
-      });
-    }
-  };
-
-  const handleDrop = (dropInfo: EventChangeArg) => {};
-
-  const handleEventClick = (clickInfo: EventClickArg) => {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
-    }
+  const handleChange = (changeInfo: EventChangeArg) => {
+    console.log('change');
+    
+    // console.log(changeInfo);
   };
 
   const handleEvents = (events: EventApi[]) => {
@@ -154,7 +136,7 @@ const Calendar = () => {
         setCalendarState={setCalendarState}
         calendarName={searchParams.get('title') || ''}
       />
-      <ModalInfosEventCalendar
+      <ModalInfoEventCalendar
         open={modalState.isOpen}
         handleClose={modalState.handleClose}
         eventInfo={eventInfo}
@@ -192,8 +174,8 @@ const Calendar = () => {
             select={handleAddEventSelectAndOpenModal}
             eventContent={renderEventContent}
             eventClick={handleEditEventSelectAndOpenModal}
-            eventDrop={handleChange}
-            eventChange={handleDrop}
+            eventDrop={handleDrop}
+            eventChange={handleChange}
             eventsSet={handleEvents} // called after events are initialized/added/changed/removed
             /* you can update a remote database when these fire:
            eventAdd={function(){}}
