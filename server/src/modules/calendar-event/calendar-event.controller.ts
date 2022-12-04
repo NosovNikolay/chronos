@@ -19,7 +19,7 @@ import { JwtAuthGuard } from '@shared/guards';
 export class CalendarEventController {
   constructor(private readonly calendarEventService: CalendarEventService) {}
 
-  @Patch(':calendarId/:eventId')
+  @Patch('calendar/:calendarId/event/:eventId')
   @UseGuards(JwtAuthGuard)
   async patchById(
     @Param('calendarId', ParseUUIDPipe) calendarId: string,
