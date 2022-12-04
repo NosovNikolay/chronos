@@ -12,6 +12,7 @@ model User {
   email         String          @unique @db.VarChar(50)
   username      String          @db.VarChar(50)
   password      String          @db.VarChar(255)
+  country       String?          @db.VarChar(255)
   calendars     Calendar[]      @relation
   CalendarRoles CalendarRoles[]
 }
