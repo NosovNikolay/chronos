@@ -1,9 +1,8 @@
 import { AuthService } from '@modules/auth/auth.service';
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { SignUpRequestDto, SignInRequestDto } from '@modules/auth/dto/request';
 import { UserResponseDto } from '@modules/user/dto/response/user.response.dto';
 import { JwtAuthGuard } from '@shared/guards';
-import { FastifyReply } from 'fastify';
 import { SignInResponseDto } from './dto/responce/sign-in.responce.dto';
 
 @Controller('auth')
@@ -23,10 +22,7 @@ export class AuthController {
   }
 
   @Post('sign-in')
-  async login(
-    @Body() signInDto: SignInRequestDto,
-    @Res({ passthrough: true }) response: FastifyReply,
-  ): Promise<SignInResponseDto> {
+  async login(@Body() signInDto: SignInRequestDto): Promise<SignInResponseDto> {
     const loginResponse = await this.authService.login(signInDto);
     return SignInResponseDto.mapFrom(loginResponse.accessToken);
   }

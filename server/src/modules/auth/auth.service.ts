@@ -15,7 +15,7 @@ export class AuthService {
 
   async registration(dto: SignUpRequestDto): Promise<User> {
     dto.password = await this.cryptoService.encryptPassword(dto.password);
-    return this.userService.createWithDefaultCalendar(dto);
+    return this.userService.register(dto);
   }
 
   async login(dto: SignInRequestDto): Promise<{ user: User; accessToken: string }> {

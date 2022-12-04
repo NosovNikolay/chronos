@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
 import { CalendarService } from '@modules/calendar/calendar.service';
-import { Calendar, User } from '@prisma/client';
-import { CreateCalendarRequestDto } from '@modules/calendar/dto';
+import { Calendar, CalendarRole, User } from '@prisma/client';
+import { CreateCalendarRequestDto, CreateInviteTokenRequestDto, UseInviteTokenRequestDto } from '@modules/calendar/dto';
 import { AuthUser } from '@shared/decorators';
 import { JwtAuthGuard } from '@shared/guards';
 import ListCalendsarsResponseClass from '@shared/response-classes/list.responce.dto';
@@ -19,6 +19,25 @@ export class CalendarController {
     return {
       items: calendars,
     };
+  }
+
+  @Post(':calendarId')
+  @UseGuards(JwtAuthGuard)
+  async createInviteToken(
+    @Param('calendarId', ParseUUIDPipe) calendarId: string,
+    @AuthUser() user: User,
+    @Body() createInviteTokenRequestDto: CreateInviteTokenRequestDto,
+  ): Promise<string> {
+    return await this.calendarService.createInviteToken(user.id, calendarId, createInviteTokenRequestDto.role);
+  }
+
+  @Post('invite-token/use')
+  @UseGuards(JwtAuthGuard)
+  async useInviteToken(
+    @AuthUser() user: User,
+    @Body() useInviteTokenRequestDto: UseInviteTokenRequestDto,
+  ): Promise<CalendarRole> {
+    return await this.calendarService.useInviteToken(user.id, useInviteTokenRequestDto.inviteToken);
   }
 
   @Delete(':id')
