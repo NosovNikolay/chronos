@@ -55,31 +55,18 @@ export const InviteToCalendarModal = ({
     <Modal open={open} onClose={handleClose}>
       <div className='box'>
         <TextField
-          label={'User email'}
+          label={'Calendar Title'}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           fullWidth
         />
-        <div className='select_color_div'>
-          {ListUserTypes.map((type, index) => (
-            <Grid style={{ margin: '10px' }} container spacing={2} key={index}>
-              <div className='backgroundColorSelect'
-                style={{ backgroundColor: type.backgroundColor}}
-                onClick={() => setUserType(type)}
-              >
-                <input type='radio' name='cardColor' />
-              </div>
-              <p style={{ marginLeft: '10px' }}>{UserType[type.type]}</p>
-            </Grid>
-          ))}
-        </div>
         <Button
           variant='contained'
           fullWidth
           onClick={handleUpdatedEvent}
           sx={{ marginTop: '0.5rem' }}
         >
-          {'Send request'}
+          {'Create'}
         </Button>
 
       </div>
