@@ -13,6 +13,11 @@ export class CalendarEventRepository {
   async getAllByCalendarId(calendarId: string): Promise<CalendarEvent[]> {
     return this.prisma.calendarEvent.findMany({ where: { calendarId } });
   }
+  async delete(calendarId: string, eventId: string): Promise<CalendarEvent> {
+    return this.prisma.calendarEvent.delete({
+      where: { calendarId_id: { calendarId, id: eventId } },
+    });
+  }
 
   async updateById(calendarId: string, eventId: string, data: Prisma.CalendarEventUpdateInput): Promise<CalendarEvent> {
     return this.prisma.calendarEvent.update({

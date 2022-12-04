@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -14,8 +15,7 @@ import { CalendarEventService } from '@modules/calendar-event/calendar-event.ser
 import { CreateCalendarEventRequestDto, UpdateCalendarEventRequestDto } from '@modules/calendar-event/dto';
 import { CalendarEvent } from '@prisma/client';
 import { JwtAuthGuard } from '@shared/guards';
-
-@Controller('calendar-events')
+@Controller()
 export class CalendarEventController {
   constructor(private readonly calendarEventService: CalendarEventService) {}
 
@@ -33,9 +33,9 @@ export class CalendarEventController {
     }
   }
 
-  @Get(':id')
+  @Get('calendar/:calendarId/event')
   @UseGuards(JwtAuthGuard)
-  async findById(@Param('id', ParseUUIDPipe) calendarId: string): Promise<CalendarEvent[]> {
+  async findById(@Param('calendarId', ParseUUIDPipe) calendarId: string): Promise<CalendarEvent[]> {
     try {
       return await this.calendarEventService.getAllByCalendarId(calendarId);
     } catch (error) {
@@ -43,10 +43,10 @@ export class CalendarEventController {
     }
   }
 
-  @Post(':id')
+  @Post('calendar/:calendarId/event')
   @UseGuards(JwtAuthGuard)
   async createEvent(
-    @Param('id', ParseUUIDPipe) calendarId: string,
+    @Param('calendarId', ParseUUIDPipe) calendarId: string,
     @Body() createCalendarEventDto: CreateCalendarEventRequestDto,
   ): Promise<CalendarEvent> {
     try {
@@ -54,5 +54,14 @@ export class CalendarEventController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Delete('calendar/:calendarId/event/:eventId')
+  @UseGuards(JwtAuthGuard)
+  async deleteEvent(
+    @Param('calendarId', ParseUUIDPipe) calendarId: string,
+    @Param('eventId', ParseUUIDPipe) eventId: string,
+  ): Promise<CalendarEvent> {
+    return await this.calendarEventService.delete(calendarId, eventId);
   }
 }

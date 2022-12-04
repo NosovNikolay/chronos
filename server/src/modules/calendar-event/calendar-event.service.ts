@@ -17,4 +17,8 @@ export class CalendarEventService {
   async updateById(calendarId: string, eventId: string, data: Prisma.CalendarEventUpdateInput): Promise<CalendarEvent> {
     return this.calendarEventRepository.updateById(calendarId, eventId, data);
   }
+
+  async delete(calendarId: string, eventId: string): Promise<CalendarEvent> {
+    return this.calendarEventRepository.delete(calendarId, eventId);
+  }
 }

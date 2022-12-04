@@ -20,6 +20,7 @@ model User {
 model Calendar {
   id            String          @id @default(uuid()) @db.Uuid
   title         String          @default("new calendar") @db.VarChar(50)
+  status CalendarViewStatus?
   users         User[]          @relation
   events        CalendarEvent[]
   calendarRoles CalendarRole[]
@@ -50,6 +51,11 @@ model CalendarEvent {
 enum UserRolesEnum {
   ADMIN
   PARTICIPANT
+}
+
+enum CalendarViewStatus {
+  HIDDEN
+  VISIBLE
 }
 
 enum CalendarEventType {
