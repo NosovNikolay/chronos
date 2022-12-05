@@ -1,11 +1,7 @@
 import { Button, Grid, Modal, TextField } from '@mui/material';
-import { CalendarApi } from '@fullcalendar/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { env } from '../../config/env';
-import useAuth from '../../hooks/useAuth';
-import '../../styles/modal.scss'
+import '../../styles/modal.scss';
 
 export enum UserType {
   GUEST = 'GUEST',
@@ -22,7 +18,7 @@ export const ListUserTypes: UsetAttributes[] = [
   { backgroundColor: '#d50000', type: UserType.ADMIN },
 ];
 
-interface IModalInfosEventCalendaryProps {
+interface IModalInfoEventCalendaryProps {
   open: boolean;
   handleClose: () => void;
   eventInfo: any;
@@ -30,19 +26,16 @@ interface IModalInfosEventCalendaryProps {
   calendarId: string;
 }
 
-export const InviteToCalendarModal = ({
-  handleClose,
-  open,
-}: IModalInfosEventCalendaryProps) => {
+export const InviteToCalendarModal = ({ handleClose, open }: IModalInfoEventCalendaryProps) => {
   const [title, setTitle] = useState<string>('');
   const [userType, setUserType] = useState<UsetAttributes>({
     backgroundColor: 'grey',
-    type: UserType.GUEST
+    type: UserType.GUEST,
   });
 
-  const handleUpdatedEvent = async () => {
+  const handleInvite = async () => {
     try {
-      console.log('add friend');
+      toast.success('Send request for user: ' + title + ' as ' + userType.type);
     } catch (error) {
       toast.error('');
     } finally {
@@ -63,8 +56,9 @@ export const InviteToCalendarModal = ({
         <div className='select_color_div'>
           {ListUserTypes.map((type, index) => (
             <Grid style={{ margin: '10px' }} container spacing={2} key={index}>
-              <div className='backgroundColorSelect'
-                style={{ backgroundColor: type.backgroundColor}}
+              <div
+                className='backgroundColorSelect'
+                style={{ backgroundColor: type.backgroundColor }}
                 onClick={() => setUserType(type)}
               >
                 <input type='radio' name='cardColor' />
@@ -73,15 +67,9 @@ export const InviteToCalendarModal = ({
             </Grid>
           ))}
         </div>
-        <Button
-          variant='contained'
-          fullWidth
-          onClick={handleUpdatedEvent}
-          sx={{ marginTop: '0.5rem' }}
-        >
+        <Button variant='contained' fullWidth onClick={handleInvite} sx={{ marginTop: '0.5rem' }}>
           {'Send request'}
         </Button>
-
       </div>
     </Modal>
   );

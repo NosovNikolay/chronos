@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CircularProgress } from '@mui/material';
 import FullCalendar, {
   EventApi,
-  EventDropArg,
   EventContentArg,
   EventChangeArg,
   EventInput,
@@ -18,11 +17,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { getHolidays } from '../../utils/event-utils';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDisclosure } from '../../hooks/useModal';
+import { useModal } from '../../hooks/useModal';
 import { ListColorsCard, ModalInfoEventCalendar } from '../modal/event';
 import { SideBar } from '../sidebar/SideBar';
 import { getEvents } from '../../services/eventService';
 import useAuth from '../../hooks/useAuth';
+import axios from 'axios';
+import { env } from '../../config/env';
 
 export interface DemoAppState {
   holidaysVisible: boolean;
@@ -45,7 +46,7 @@ const Calendar = () => {
   });
   const [isEditCard, setIsEditCard] = useState<boolean>(false);
   const [eventInfo, setEventInfo] = useState();
-  const modalState = useDisclosure(false);
+  const modalState = useModal(false);
   const { token } = useAuth();
   const handleAddEventSelectAndOpenModal = (selectInfo: any) => {
     setIsEditCard(false);
@@ -57,31 +58,6 @@ const Calendar = () => {
     setIsEditCard(true);
     setEventInfo(clickInfo);
     modalState.handleOpen();
-  };
-
-  // const handleUpdateEventSelect = async (changeInfo: any) => {
-  //   try {
-  //     const eventCalendarUpdated = {
-  //       eventCalendar: {
-  //         _id: changeInfo.event.id,
-  //         title: changeInfo.event.title,
-  //         start: changeInfo.event.startStr,
-  //         end: changeInfo.event.endStr,
-  //         backgroundColor: changeInfo.event.backgroundColor,
-  //         textColor: changeInfo.event.textColor,
-  //       },
-  //     };
-
-  //     await updateEventCalendar(eventCalendarUpdated);
-  //   } catch (err) {
-  //     toast.error('Houve um erro ao atualizar o evento');
-  //   }
-  // };
-
-  const handleDrop = (dropInfo: EventDropArg) => {
-   console.log('drop');
-
-    // console.log(dropInfo);
   };
 
   useEffect(() => {
@@ -117,9 +93,40 @@ const Calendar = () => {
   }, []);
 
   const handleChange = (changeInfo: EventChangeArg) => {
-    console.log('change');
-    
-    // console.log(changeInfo);
+    console.log(changeInfo.event.startStr);
+    console.log(changeInfo.event.endStr);
+
+    try {
+      const currentEvent = changeInfo.oldEvent;
+      console.log(currentEvent.allDay);
+      if (currentEvent?.backgroundColor === 'green') {
+        toast.error('Can not change holiday');
+        changeInfo.revert();
+        return;
+      }
+      axios
+        .patch(
+          `${env.VITE_APP_API}/calendar/${id}/event/${currentEvent.id}`,
+          {
+            start: new Date(changeInfo.event.startStr).toISOString(),
+            end: currentEvent.allDay
+              ? new Date(changeInfo.event.startStr).toISOString()
+              : new Date(changeInfo.event.endStr).toISOString(),
+            isFullDay: changeInfo.event.allDay,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((response) => {
+          // const data = response.data;
+          toast.success('Updated event successfully');
+        });
+    } catch (error) {
+      toast.error('Oops something went wrong');
+    }
   };
 
   const handleEvents = (events: EventApi[]) => {
@@ -174,14 +181,8 @@ const Calendar = () => {
             select={handleAddEventSelectAndOpenModal}
             eventContent={renderEventContent}
             eventClick={handleEditEventSelectAndOpenModal}
-            eventDrop={handleDrop}
             eventChange={handleChange}
-            eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
-           eventAdd={function(){}}
-           eventChange={function(){}}
-           eventRemove={function(){}}
-           */
+            eventsSet={handleEvents}
           />
         </div>
       )}

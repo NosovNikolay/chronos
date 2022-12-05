@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import PageNotFound from './components/404/PageNotFound';
 import Dashboard from './components/dashboard/Dashboard';
 
-// TODO: add about pages
 const Home = () => <h1>About page</h1>;
 const HomeAuth = () => <h1>About page auth</h1>;
 

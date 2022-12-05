@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as React from 'react';
 import { env } from '../config/env';
 
-// TODO: replace any with types
 export interface LoginData {
   email: string;
   password: string;
@@ -14,7 +13,6 @@ type ProviderProps = {
 
 export interface RegistationData extends LoginData {
   username: string;
-  // wantsRecieveNotifications: boolean,
 }
 interface AuthContextType {
   authed: boolean;
@@ -31,9 +29,9 @@ const initialState: AuthContextType = {
       null;
     }),
   logout: async () =>
-    console.error(
-      'No AuthProvider supplied. Wrap this component with a AuthProvider to use this functionality.',
-    ),
+    new Promise<any>(() => {
+      null;
+    }),
 };
 
 const authContext = React.createContext(initialState);
@@ -58,10 +56,9 @@ function useAuth() {
       setAuthed(true);
       return responce;
     },
-    logout() {
-      return new Promise(() => {
-        setAuthed(false);
-      });
+    async logout() {
+      localStorage.removeItem('auth');
+      setAuthed(false);
     },
   };
 }

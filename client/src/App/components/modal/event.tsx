@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { env } from '../../config/env';
 import useAuth from '../../hooks/useAuth';
-import '../../styles/modal.scss'
+import '../../styles/modal.scss';
 
 export enum EventType {
   ARRANGMENT = 'ARRANGEMENT',
@@ -36,7 +36,7 @@ interface ICardColor {
   textColor: string;
 }
 
-interface IModalInfosEventCalendaryProps {
+interface IModalInfoEventCalendaryProps {
   open: boolean;
   handleClose: () => void;
   eventInfo: any;
@@ -50,7 +50,7 @@ export const ModalInfoEventCalendar = ({
   eventInfo,
   isEditCard,
   calendarId,
-}: IModalInfosEventCalendaryProps) => {
+}: IModalInfoEventCalendaryProps) => {
   const [title, setTitle] = useState<string>('');
   const [cardColor, setCardColor] = useState<ICardColor>({
     backgroundColor: '#039be5',
@@ -83,7 +83,7 @@ export const ModalInfoEventCalendar = ({
       const calendarApi: CalendarApi = eventInfo.view.calendar;
       axios
         .post(
-          `${env.VITE_APP_API}/calendar-events/${calendarId}`,
+          `${env.VITE_APP_API}/calendar/${calendarId}/event`,
           {
             title: title,
             start: new Date(eventInfo.startStr).toISOString(),
@@ -121,26 +121,44 @@ export const ModalInfoEventCalendar = ({
   };
 
   const handleDeleteEvent = async () => {
-    // try {
-    //   await deleteEventCalendar({ id: eventInfos.event.id });
-    //   eventInfos.event.remove();
-    // } catch (error) {
-    //   toast.error('Houve um erro ao deletar o evento');
-    // } finally {
-    //   setTitle('');
-    //   handleClose();
-    // }
+    try {
+      const calendarApi: CalendarApi = eventInfo.view.calendar;
+      const currentEvent = calendarApi.getEventById(eventInfo.event.id);
+      if (currentEvent?.backgroundColor === 'green') {
+        toast.error('Can not delete holiday');
+        setTitle('');
+        handleClose();
+        return;
+      }
+      axios
+        .delete(`${env.VITE_APP_API}/calendar/${calendarId}/event/${eventInfo.event.id}`, {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        })
+        .then(() => {
+          toast.success('Delete event successfully');
+          eventInfo.event.remove();
+        });
+    } catch (err) {
+      console.log(err);
+      toast.error('Ooops, something went wrong');
+    } finally {
+      setTitle('');
+      handleClose();
+    }
   };
 
   const handleUpdatedEvent = async () => {
     try {
       const calendarApi: CalendarApi = eventInfo.view.calendar;
+      console.log(eventInfo);
       const eventCalendarUpdated = {
-          id: eventInfo.event.id,
-          title: title || 'Empty title',
-          start: eventInfo.event.startStr,
-          end: eventInfo.event.endStr,
-          type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type,
+        id: eventInfo.event.id,
+        title: title || 'Empty title',
+        start: eventInfo.event.startStr,
+        end: eventInfo.event.endStr,
+        type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type,
       };
       const currentEvent = calendarApi.getEventById(eventInfo.event.id);
       if (currentEvent?.backgroundColor === 'green') {
@@ -149,14 +167,39 @@ export const ModalInfoEventCalendar = ({
         handleClose();
         return;
       }
-      // if (currentEvent) {
-      //   currentEvent.setProp('title', title !== '' ? title : '123');
-      //   currentEvent.setProp('backgroundColor', cardColor.backgroundColor);
-      //   currentEvent.setProp('textColor', cardColor.textColor);
-      // }
-      console.log(eventCalendarUpdated);
-      // await updateEventCalendar(eventCalendarUpdated);
+      axios
+        .patch(
+          `${env.VITE_APP_API}/calendar/${calendarId}/event/${eventInfo.event.id}`,
+          {
+            title: title,
+            start: new Date(eventInfo.event.startStr).toISOString(),
+            end: new Date(eventInfo.event.endStr).toISOString(),
+            isFullDay: eventInfo.event.allDay,
+            type: ListColorsCard.find((e) => e.backgroundColor === cardColor.backgroundColor)?.type,
+          },
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          },
+        )
+        .then((response) => {
+          const data = response.data;
+          eventInfo.event.remove();
+          calendarApi.addEvent({
+            id: data.id,
+            title: data.title,
+            start: data.isFullDay ? data.start.split('T')[0] : data.start,
+            end: data.isFullDay ? data.end.split('T')[0] : data.end,
+            allDay: data.isFullDay,
+            backgroundColor:
+              ListColorsCard.find((e) => e.type === data.type)?.backgroundColor || '#039be5',
+            textColor: '#ffffff',
+          });
+          toast.success('Updated event successfully');
+        });
     } catch (error) {
+      console.log(error);
       toast.error('');
     } finally {
       setTitle('');
@@ -177,8 +220,9 @@ export const ModalInfoEventCalendar = ({
         <div className='select_color_div'>
           {ListColorsCard.map((color, index) => (
             <Grid style={{ margin: '10px' }} container spacing={2} key={index}>
-              <div className='backgroundColorSelect'
-                style={{ backgroundColor: color.backgroundColor}}
+              <div
+                className='backgroundColorSelect'
+                style={{ backgroundColor: color.backgroundColor }}
                 onClick={() => handleSelectCardColor(color)}
               >
                 <input type='radio' name='cardColor' />

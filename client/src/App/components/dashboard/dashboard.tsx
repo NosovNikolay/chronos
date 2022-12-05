@@ -10,7 +10,7 @@ import { Typography } from '@material-ui/core';
 import useAuth from '../../hooks/useAuth';
 import { env } from '../../config/env';
 import { InviteToCalendarModal } from '../modal/createNewCalendar';
-import { useDisclosure } from '../../hooks/useModal';
+import { useModal } from '../../hooks/useModal';
 // TODO: interface forlist of calendars
 const ShowCategory = (props) => {
   const { list } = props;
@@ -26,7 +26,7 @@ const ShowCategory = (props) => {
 function Dashboard() {
   const { token } = useAuth();
   const [state, setState] = useState([]);
-  const modalState = useDisclosure(false);
+  const modalState = useModal(false);
 
   useEffect(() => {
     fetch(env.VITE_APP_API + '/calendars', {
@@ -40,11 +40,10 @@ function Dashboard() {
       .then(function (data) {
         setState(data.items);
       });
-  }, []);
+  }, [modalState.isOpen]);
   const handleInviteModal = () => {
     modalState.handleOpen();
-  }
-  // TODO: remove string concat + types
+  };
   return (
     <>
       <InviteToCalendarModal
@@ -61,36 +60,26 @@ function Dashboard() {
       </div>
       {state?.length ? (
         <div>
-          <Grid
-            container
-            spacing={8}
-            direction='row'
-            alignItems='center'
-            justifyContent='center'
-          >
+          <Grid container spacing={8} direction='row' alignItems='center' justifyContent='center'>
             {state.map((calendar, index) => (
               <Grid key={index} item>
                 <Link to={'/calendar/' + calendar.id + '?' + 'title=' + calendar.title}>
-                  <Grid style={{margin: '20px'}} container spacing={2}>
+                  <Grid style={{ margin: '20px' }} container spacing={2}>
                     <ShowCategory list={calendar}></ShowCategory>
                   </Grid>
                 </Link>
               </Grid>
             ))}
           </Grid>
-          <Grid 
-            container
-            direction='column'
-            alignItems='center'
-            justifyContent='center'>
-                <Link to={'/calendar'}>
-                  <Grid container spacing={2}>
-                  <Button style={{ marginLeft: '20px' }} onClick={() => handleInviteModal()}>
-                    + Create new Calendar
-                  </Button>
-                  </Grid>
-                </Link>
+          <Grid container direction='column' alignItems='center' justifyContent='center'>
+            <Link to={'/calendar'}>
+              <Grid container spacing={2}>
+                <Button style={{ marginLeft: '20px' }} onClick={() => handleInviteModal()}>
+                  + Create new Calendar
+                </Button>
               </Grid>
+            </Link>
+          </Grid>
         </div>
       ) : (
         <CircularProgress className='loading_indicator' color='secondary' />

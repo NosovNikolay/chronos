@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import useAuth from '../../hooks/useAuth';
 
 const pages = ['Dashboard', 'About'];
 const settings = ['Profile', 'Logout'];
@@ -19,7 +20,7 @@ const settings = ['Profile', 'Logout'];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
+  const { logout } = useAuth();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -32,9 +33,15 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseUserMenu = () => {
+    console.log('123');
     setAnchorElUser(null);
   };
-  // TODO: add event logout button
+  const handleLogout = () => {
+    logout().then(() => {
+      localStorage.removeItem('auth');
+    });
+    setAnchorElUser(null);
+  };
   return (
     <AppBar style={{ background: '#2E3B55' }} position='static'>
       <Container maxWidth={false}>
@@ -148,7 +155,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={handleLogout}>
                   <Typography textAlign='center'>{setting}</Typography>
                 </MenuItem>
               ))}

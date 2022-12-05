@@ -12,33 +12,51 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import axios from 'axios';
+import { env } from '../../config/env';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const theme = createTheme();
 
 export default function SignUp() {
-  const [responseError, setResponceError] = useState('');
+  const navigate = useNavigate();
   const loginSchema = Yup.object({
     email: Yup.string().email().required('Required'),
     password: Yup.string().required('Required').min(8),
+    repeatPassword: Yup.string().required('Required').min(8),
+    login: Yup.string().required('Required'),
   });
 
   const { handleSubmit, handleChange, handleBlur, touched, errors } = useFormik({
     initialValues: {
       email: '',
       password: '',
+      repeatPassword: '',
+      login: '',
     },
     validationSchema: loginSchema,
     onSubmit: async (data) => {
-      // types errors
-      const result = await login(data.email, data.password);
-      // bad types + bad condition
-      if (result.status === 201) {
-        // mock token for now, then will receive it from api
-        localStorage.setItem('auth', '123');
-        navigate('/login');
-      } else {
-        setResponceError(result.message);
+      if (data.password !== data.repeatPassword) {
+        toast.error('Password should match');
+        return;
       }
+
+      axios
+        .post(`${env.VITE_APP_API}/sign-up`, {
+          email: data.email,
+          password: data.password,
+          username: data.login,
+        })
+        .then(() => {
+          navigate('/login');
+          toast.success('Account succsessfully created');
+        })
+        .catch(() => {
+          toast.error('Oops sometheng went wrong');
+        });
     },
   });
   // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,29 +88,24 @@ export default function SignUp() {
           </Typography>
           <Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   autoComplete='given-name'
-                  name='firstName'
+                  name='login'
                   required
                   fullWidth
                   id='firstName'
-                  label='First Name'
+                  label='Login'
                   autoFocus
                 />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id='lastName'
-                  label='Last Name'
-                  name='lastName'
-                  autoComplete='family-name'
-                />
+                {touched.login ? <div className='errorInputLog'>{errors.email}</div> : null}
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   fullWidth
                   id='email'
@@ -100,9 +113,12 @@ export default function SignUp() {
                   name='email'
                   autoComplete='email'
                 />
+                {touched.email ? <div className='errorInputLog'>{errors.email}</div> : null}
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   fullWidth
                   name='password'
@@ -113,10 +129,18 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value='allowExtraEmails' color='primary' />}
-                  label='I want to receive inspiration, marketing promotions and updates via email.'
+                <TextField
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  fullWidth
+                  name='repeatPassword'
+                  label='Repeat password'
+                  type='password'
+                  id='reapeat-password'
+                  autoComplete='new-password'
                 />
+                {touched.email ? <div className='errorInputLog'>{errors.email}</div> : null}
               </Grid>
             </Grid>
             <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-export const useDisclosure = (initialState = false) => {
+export const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
 
   const handleOpen = useCallback(() => setIsOpen(true), []);
