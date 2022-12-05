@@ -1,10 +1,14 @@
 import { Button, Grid, Modal, TextField } from '@mui/material';
+import axios from 'axios';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { env } from '../../config/env';
+import useAuth from '../../hooks/useAuth';
 import '../../styles/modal.scss';
 
 export enum UserType {
-  GUEST = 'GUEST',
+  PARTICIPANT = 'PARTICIPANT',
   ADMIN = 'ADMIN',
 }
 
@@ -14,7 +18,7 @@ interface UsetAttributes {
 }
 
 export const ListUserTypes: UsetAttributes[] = [
-  { backgroundColor: 'grey', type: UserType.GUEST },
+  { backgroundColor: 'grey', type: UserType.PARTICIPANT },
   { backgroundColor: '#d50000', type: UserType.ADMIN },
 ];
 
@@ -27,21 +31,31 @@ interface IModalInfoEventCalendaryProps {
 }
 
 export const InviteToCalendarModal = ({ handleClose, open }: IModalInfoEventCalendaryProps) => {
+  const { id } = useParams();
+  const { token } = useAuth();
   const [title, setTitle] = useState<string>('');
   const [userType, setUserType] = useState<UsetAttributes>({
     backgroundColor: 'grey',
-    type: UserType.GUEST,
+    type: UserType.PARTICIPANT,
   });
 
   const handleInvite = async () => {
-    try {
+    axios.post(`${env.VITE_APP_API}/calendars/${id}`, {
+      role: userType.type
+    }, 
+    {
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    }).then(() => {
       toast.success('Send request for user: ' + title + ' as ' + userType.type);
-    } catch (error) {
-      toast.error('');
-    } finally {
+    }).catch(() =>{
+      toast.error('Oops, something went wrong');
+
+    }).finally(() => {
       setTitle('');
       handleClose();
-    }
+    })
   };
 
   return (
